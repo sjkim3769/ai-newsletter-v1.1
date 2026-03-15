@@ -91,13 +91,11 @@ def fetch_feed(source):
 
         published_at = parse_date(entry)
 
-        # description: summary 또는 content
-        description = entry.get("summary", "")
-        if not description and entry.get("content"):
-            description = entry["content"][0].get("value", "")
-        description = description.strip()
-
-        snippet = description[:SNIPPET_LENGTH] if description else ""
+        # content_snippet: RSS 본문 앞 SNIPPET_LENGTH자만 저장
+        raw = entry.get("summary", "")
+        if not raw and entry.get("content"):
+            raw = entry["content"][0].get("value", "")
+        snippet = raw.strip()[:SNIPPET_LENGTH]
 
         articles.append({
             "id": str(uuid.uuid4()),
@@ -107,7 +105,6 @@ def fetch_feed(source):
             "source_type": source.get("type", "기타"),
             "language": source.get("language", "ko"),
             "published_at": published_at,
-            "description": description,
             "content_snippet": snippet,
         })
 

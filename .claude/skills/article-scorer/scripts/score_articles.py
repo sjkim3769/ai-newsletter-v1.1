@@ -63,7 +63,7 @@ def is_within_hours(published_at_str, hours=24):
 def calc_score(article, keywords_high, keywords_medium, trust_map, source_type_map):
     """AI 관련도 점수 계산 (0~100 기준, trust_weight 적용)"""
     title = article.get("title", "").lower()
-    snippet = (article.get("content_snippet") or article.get("description") or "").lower()
+    snippet = (article.get("content_snippet") or "").lower()
     source = article.get("source", "")
     source_type = source_type_map.get(source, article.get("source_type", "기타"))
 
@@ -104,7 +104,6 @@ def classify_topic(article, source_type_map):
     """토픽 분류 (규칙 기반)"""
     text = (
         (article.get("title") or "") + " " +
-        (article.get("description") or "") + " " +
         (article.get("content_snippet") or "")
     ).lower()
 
