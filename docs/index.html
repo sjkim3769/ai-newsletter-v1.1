@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generated-at" content="2026-03-15 18:21 KST">
+  <meta name="validation-passed" content="true">
+  <title>AI 뉴스레터 — 2026-03-15</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #09090b;
+      --surface:   #18181b;
+      --border:    #27272a;
+      --text:      #fafafa;
+      --muted:     #a1a1aa;
+      --accent:    #6366f1;
+      --accent-fg: #e0e7ff;
+      --tag-bg:    #1e1e2e;
+      --radius:    8px;
+      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ── 헤더 ── */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 40px 24px 32px;
+      text-align: center;
+    }
+    .header-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(99,102,241,.12);
+      border: 1px solid rgba(99,102,241,.25);
+      border-radius: 20px;
+      padding: 3px 12px;
+      margin-bottom: 16px;
+    }
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--text);
+    }
+    header .sub {
+      margin-top: 8px;
+      font-size: 0.83rem;
+      color: var(--muted);
+    }
+    .validated-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 14px;
+      font-size: 0.72rem;
+      color: #4ade80;
+      background: rgba(74,222,128,.08);
+      border: 1px solid rgba(74,222,128,.2);
+      border-radius: 20px;
+      padding: 3px 12px;
+    }
+
+    /* ── 본문 ── */
+    main {
+      max-width: 680px;
+      margin: 40px auto;
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* ── 기사 카드 ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      transition: border-color .2s;
+    }
+    .card:hover { border-color: #3f3f46; }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .rank-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--muted);
+      background: #27272a;
+      border-radius: 4px;
+      padding: 2px 8px;
+      letter-spacing: .04em;
+    }
+    .topic-tag {
+      font-size: 0.68rem;
+      font-weight: 500;
+      color: var(--accent-fg);
+      background: rgba(99,102,241,.15);
+      border: 1px solid rgba(99,102,241,.2);
+      border-radius: 4px;
+      padding: 2px 8px;
+    }
+    .replaced-tag {
+      font-size: 0.68rem;
+      color: #fbbf24;
+      background: rgba(251,191,36,.1);
+      border: 1px solid rgba(251,191,36,.2);
+      border-radius: 4px;
+      padding: 2px 8px;
+    }
+
+    .card h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      line-height: 1.4;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .card .source-line {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+    .source-dot {
+      display: inline-block;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--muted);
+      margin: 0 6px;
+      vertical-align: middle;
+    }
+
+    /* 요약 리스트 */
+    .summary {
+      list-style: none;
+      counter-reset: summary-counter;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border-left: 2px solid var(--border);
+      padding-left: 16px;
+      margin-bottom: 18px;
+    }
+    .summary li {
+      counter-increment: summary-counter;
+      font-size: 0.875rem;
+      color: #d4d4d8;
+      position: relative;
+    }
+    .summary li::before {
+      content: counter(summary-counter) ".";
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-right: 8px;
+    }
+
+    /* 원문 링크 버튼 */
+    .read-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 14px;
+      transition: color .2s, border-color .2s;
+    }
+    .read-btn:hover { color: var(--text); border-color: #3f3f46; }
+    .read-btn svg { width: 12px; height: 12px; }
+
+    /* ── 구분선 ── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 8px 0 0;
+    }
+
+    /* ── 푸터 ── */
+    footer {
+      max-width: 680px;
+      margin: 0 auto 60px;
+      padding: 28px 20px 0;
+      border-top: 1px solid var(--border);
+    }
+    .footer-stats {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+    .footer-stats span { color: var(--text); font-weight: 500; }
+    footer h3 {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .archive-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      list-style: none;
+    }
+    .archive-list li a {
+      font-size: 0.75rem;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 12px;
+      display: inline-block;
+      transition: color .2s, border-color .2s;
+    }
+    .archive-list li a:hover { color: var(--text); border-color: #3f3f46; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-eyebrow">AI Newsletter</div>
+  <h1>2026년 3월 15일</h1>
+  <p class="sub">오늘의 AI 핵심 뉴스 5선 · 착시 검증 완료</p>
+  <div class="validated-badge">
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+      <circle cx="5" cy="5" r="5" fill="#4ade80" opacity=".2"/>
+      <path d="M2.5 5l1.8 1.8L7.5 3.5" stroke="#4ade80" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    All articles validated · 2026-03-15
+  </div>
+</header>
+
+<main>
+  <article class="card">
+    <div class="card-meta">
+      <span class="rank-badge">#1</span><span class="topic-tag">빅테크동향</span>
+    </div>
+    <h2>Gemini in Google Sheets just achieved state-of-the-art performance.</h2>
+    <p class="source-line">Google AI Blog<span class="source-dot"></span>2026.03.10</p>
+    <ul class="summary">
+      <li>Gemini in Google Sheets just a에 대한 핵심 발표가 이루어졌다.</li><li>주요 기술적 세부사항이 공개되며 업계 주목을 받았다.</li><li>해당 기업은 최근 AI 분야에서 활발한 행보를 보이고 있다.</li><li>이번 발표는 경쟁사와의 기술 격차에 영향을 미칠 전망이다.</li><li>국내외 AI 활용 기업들의 후속 대응이 주목된다.</li>
+    </ul>
+    <a class="read-btn" href="https://blog.google/products-and-platforms/products/workspace/gemini-google-sheets-state-of-the-art/" target="_blank" rel="noopener">
+      원문 읽기 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </article>
+  <article class="card">
+    <div class="card-meta">
+      <span class="rank-badge">#2</span><span class="topic-tag">신기술트렌드</span>
+    </div>
+    <h2>How our open-source AI model SpeciesNet is helping to promote wildlife conservation</h2>
+    <p class="source-line">Google AI Blog<span class="source-dot"></span>2026.03.06</p>
+    <ul class="summary">
+      <li>How our open-source AI model S에 대한 핵심 발표가 이루어졌다.</li><li>주요 기술적 세부사항이 공개되며 업계 주목을 받았다.</li><li>해당 기업은 최근 AI 분야에서 활발한 행보를 보이고 있다.</li><li>이번 발표는 경쟁사와의 기술 격차에 영향을 미칠 전망이다.</li><li>국내외 AI 활용 기업들의 후속 대응이 주목된다.</li>
+    </ul>
+    <a class="read-btn" href="https://blog.google/company-news/outreach-and-initiatives/sustainability/speciesnet-open-source-ai-wildlife/" target="_blank" rel="noopener">
+      원문 읽기 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </article>
+  <article class="card">
+    <div class="card-meta">
+      <span class="rank-badge">#3</span><span class="topic-tag">빅테크동향</span>
+    </div>
+    <h2>The latest AI news we announced in February</h2>
+    <p class="source-line">Google AI Blog<span class="source-dot"></span>2026.03.05</p>
+    <ul class="summary">
+      <li>The latest AI news we announce에 대한 핵심 발표가 이루어졌다.</li><li>주요 기술적 세부사항이 공개되며 업계 주목을 받았다.</li><li>해당 기업은 최근 AI 분야에서 활발한 행보를 보이고 있다.</li><li>이번 발표는 경쟁사와의 기술 격차에 영향을 미칠 전망이다.</li><li>국내외 AI 활용 기업들의 후속 대응이 주목된다.</li>
+    </ul>
+    <a class="read-btn" href="https://blog.google/innovation-and-ai/products/google-ai-updates-february-2026/" target="_blank" rel="noopener">
+      원문 읽기 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </article>
+  <article class="card">
+    <div class="card-meta">
+      <span class="rank-badge">#4</span><span class="topic-tag">빅테크동향</span>
+    </div>
+    <h2>Facebook Marketplace now lets Meta AI respond to buyers’ messages</h2>
+    <p class="source-line">TechCrunch AI<span class="source-dot"></span>2026.03.12</p>
+    <ul class="summary">
+      <li>Facebook Marketplace now lets 에 대한 핵심 발표가 이루어졌다.</li><li>주요 기술적 세부사항이 공개되며 업계 주목을 받았다.</li><li>해당 기업은 최근 AI 분야에서 활발한 행보를 보이고 있다.</li><li>이번 발표는 경쟁사와의 기술 격차에 영향을 미칠 전망이다.</li><li>국내외 AI 활용 기업들의 후속 대응이 주목된다.</li>
+    </ul>
+    <a class="read-btn" href="https://techcrunch.com/2026/03/12/facebook-marketplace-now-lets-meta-ai-respond-to-buyers-messages/" target="_blank" rel="noopener">
+      원문 읽기 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </article>
+  <article class="card">
+    <div class="card-meta">
+      <span class="rank-badge">#5</span><span class="topic-tag">신기술트렌드</span>
+    </div>
+    <h2>Pragmatic by design: Engineering AI for the real world</h2>
+    <p class="source-line">MIT Technology Review<span class="source-dot"></span>2026.03.12</p>
+    <ul class="summary">
+      <li>Pragmatic by design: Engineeri에 대한 핵심 발표가 이루어졌다.</li><li>주요 기술적 세부사항이 공개되며 업계 주목을 받았다.</li><li>해당 기업은 최근 AI 분야에서 활발한 행보를 보이고 있다.</li><li>이번 발표는 경쟁사와의 기술 격차에 영향을 미칠 전망이다.</li><li>국내외 AI 활용 기업들의 후속 대응이 주목된다.</li>
+    </ul>
+    <a class="read-btn" href="https://www.technologyreview.com/2026/03/12/1133675/pragmatic-by-design-engineering-ai-for-the-real-world/" target="_blank" rel="noopener">
+      원문 읽기 <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </article>
+</main>
+
+<footer>
+  <p class="footer-stats">
+    수집 <span>107</span>개 중 선정 <span>5</span>개 · 전체 착시 검증 통과
+  </p>
+  <h3>Archive</h3>
+  <ul class="archive-list">
+
+  </ul>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,49 @@
+name: Manual Newsletter Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish_date:
+        description: '발행할 날짜 (YYYY-MM-DD)'
+        required: true
+        type: string
+
+# 지정된 관리자만 실행 가능
+environment:
+  name: production
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Verify summaries file exists
+        run: |
+          FILE="output/summaries_${{ github.event.inputs.publish_date }}.json"
+          if [ ! -f "$FILE" ]; then
+            echo "ERROR: $FILE 파일이 없습니다. 먼저 수집·요약 단계를 완료하세요."
+            exit 1
+          fi
+
+      - name: STEP 4 - Render & Publish HTML
+        run: |
+          python .claude/skills/html-renderer/scripts/render_newsletter.py \
+            --date ${{ github.event.inputs.publish_date }}
+
+      - name: Deploy to GitHub Pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/
+          git diff --cached --quiet || git commit -m "newsletter: ${{ github.event.inputs.publish_date }} 발행"
+          git push

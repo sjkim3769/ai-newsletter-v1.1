@@ -1,0 +1,19 @@
+# 중간 산출물 (30일 보존, git 제외)
+output/
+
+# 환경 변수
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 임시 파일
+files/

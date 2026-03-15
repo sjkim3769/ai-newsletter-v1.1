@@ -1,0 +1,62 @@
+name: Daily Newsletter Collection
+
+on:
+  schedule:
+    - cron: '0 23 * * *'  # UTC 23:00 = KST 08:00
+  workflow_dispatch:        # 수동 실행 허용
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Set date
+        id: date
+        run: echo "today=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+      - name: STEP 1 - Collect RSS
+        run: |
+          python .claude/skills/rss-fetcher/scripts/fetch_rss.py \
+            --date ${{ steps.date.outputs.today }}
+
+      - name: STEP 2 - Score & Select Articles
+        run: |
+          python .claude/skills/article-scorer/scripts/score_articles.py \
+            --date ${{ steps.date.outputs.today }}
+
+      - name: STEP 3 - Summarize & Validate
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          echo "Summarizer는 Claude Code 에이전트가 수동 실행합니다."
+          # TODO: summarizer 자동화 스크립트 추가 시 여기에 삽입
+
+      - name: Commit output files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add output/
+          git diff --cached --quiet || git commit -m "collect: ${{ steps.date.outputs.today }} 수집 완료"
+          git push
+
+      - name: Create Issue on Failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `[수집 실패] ${{ steps.date.outputs.today }} 뉴스레터 수집 오류`,
+              body: '자동 수집 워크플로우가 실패했습니다. 로그를 확인하세요.',
+              labels: ['bug', 'newsletter']
+            })
