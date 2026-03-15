@@ -4,31 +4,25 @@
 sources:
   # 국내 IT 전문 언론
   - name: "지디넷코리아"
-    url: "https://zdnet.co.kr/rss/news/"
+    url: "https://feeds.feedburner.com/zdkorea"
     type: "국내"
     language: "ko"
     trust_weight: 1.2
 
-  - name: "블로터"
-    url: "https://www.bloter.net/feed/"
+  - name: "전자신문 AI"
+    url: "https://rss.etnews.com/04046.xml"
+    type: "국내"
+    language: "ko"
+    trust_weight: 1.2
+
+  - name: "전자신문 SW"
+    url: "https://rss.etnews.com/04.xml"
     type: "국내"
     language: "ko"
     trust_weight: 1.1
-
-  - name: "전자신문"
-    url: "https://www.etnews.com/rss/allnews.xml"
-    type: "국내"
-    language: "ko"
-    trust_weight: 1.2
 
   - name: "아이뉴스24"
-    url: "https://www.inews24.com/rss/allnews.xml"
-    type: "국내"
-    language: "ko"
-    trust_weight: 1.1
-
-  - name: "디지털타임스"
-    url: "https://www.dt.co.kr/rss/allnews.xml"
+    url: "https://rss.inews24.com/rss/news_it.xml"
     type: "국내"
     language: "ko"
     trust_weight: 1.1
