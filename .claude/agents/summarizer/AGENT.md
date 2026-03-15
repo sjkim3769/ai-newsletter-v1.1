@@ -12,19 +12,19 @@
 ## Trigger Condition
 
 오케스트레이터(CLAUDE.md)가 다음 조건에서 이 에이전트를 호출한다:
-- `output/translated_articles_{오늘날짜}.json` 파일이 존재하고 top5 + candidates 10개가 확보됐을 때
+- `output/scored_articles_{오늘날짜}.json` 파일이 존재하고 top5 + candidates 10개가 확보됐을 때
 
 ---
 
 ## Workflow
 
 ```
-1. output/translated_articles_{YYYY-MM-DD}.json 로드
+1. output/scored_articles_{YYYY-MM-DD}.json 로드
 2. top5 기사 목록 추출
 3. 각 기사에 대해 순서대로:
-   a. translated_content 사용 (영어 기사) 또는 원문 content_snippet 사용 (한국어 기사)
+   a. 원문 URL fetch (실제 본문 내용 획득)
    b. 본문내용을 맥락에 맞게 5줄 요약 생성 (LLM)
-   c. 착시 자기 검증 (LLM) — 번역본(또는 원문)과 요약문 비교
+   c. 착시 자기 검증 (LLM)
    d. 검증 통과 → summaries 목록에 추가
    e. 검증 실패 → 해당 기사 제외, candidates에서 다음 순위 기사로 대체 후 3번으로
 4. 5개 검증 완료 요약 확보 시 output/summaries_{YYYY-MM-DD}.json 저장
@@ -45,8 +45,8 @@
 
 기사 5줄 요약 시 아래 규칙을 **반드시** 준수한다:
 
-1. **입력 우선순위**: `translated_content` 가 있으면 사용, 없으면 `content_snippet` 사용
-2. **출력 언어**: **항상 한국어** (번역은 Translator 에이전트가 완료한 상태)
+1. **출력 언어**: **항상 한국어**
+2. **입력**: 원문 URL fetch 본문 우선, fetch 실패 시 `content_snippet` 사용
 3. **줄 수**: 정확히 **5줄** (초과/미달 불가)
 4. **각 줄 구성**: 기사의 본문내용을 맥락을 이해하고 하이라이트 형태로 5줄로 요약한다
 5. **길이**: 줄당 1~2문장, 50자 이상 100자 이내
@@ -58,7 +58,7 @@
 다음 기사를 읽고 한국어로 정확히 5줄로 요약하라.
 
 [기사 내용]
-{translated_content_or_content_snippet}
+{article_content}
 
 규칙:
 - 반드시 한국어로 작성
@@ -77,7 +77,7 @@
 ### 착시(Hallucination) 정의
 요약 기사 내용이 원문 URL의 실제 기사 내용과 다르게 읽히는 현상.
 독자가 요약만 보고 원문을 클릭했을 때 "다른 기사"처럼 느껴지면 착시로 판정한다.
-**영어 원문의 경우**: Translator가 제공한 `translated_content`와 요약문을 비교한다.
+독자가 요약만 보고 원문을 클릭했을 때 "다른 기사"처럼 느껴지면 착시로 판정한다.
 
 ### 검증 프롬프트 템플릿
 
@@ -124,7 +124,7 @@
 
 ## Input
 
-**파일 경로**: `output/translated_articles_{YYYY-MM-DD}.json`
+**파일 경로**: `output/scored_articles_{YYYY-MM-DD}.json`
 
 ---
 
@@ -194,6 +194,6 @@
 
 - **LLM 호출**: 이 에이전트에서만 허용 (요약 생성 + 착시 검증)
 - **원문 fetch**: robots.txt 준수, User-Agent 명시
-- **비용 최적화**: 기사당 최대 2회 LLM 호출 (요약 1회 + 검증 1회) — 번역은 Translator 에이전트가 담당
+- **비용 최적화**: 기사당 최대 2회 LLM 호출 (요약 1회 + 검증 1회)
 - **재생성 시 추가 호출 허용**: 요약 형식 오류 수정 시 1회 추가
 - **후보 대체로 인한 추가 호출**: 대체 기사당 최대 2회 (요약 + 검증)

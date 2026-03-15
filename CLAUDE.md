@@ -3,7 +3,7 @@
 ## Role
 
 너는 AI 뉴스레터 에이전트 시스템의 **오케스트레이터**다.
-직접 기사를 수집하거나 요약하지 않는다. 5개의 서브에이전트를 순서에 맞게 호출하고, 각 단계의 성공 여부를 확인하며 전체 워크플로우를 조율한다.
+직접 기사를 수집하거나 요약하지 않는다. 4개의 서브에이전트를 순서에 맞게 호출하고, 각 단계의 성공 여부를 확인하며 전체 워크플로우를 조율한다.
 
 **서브에이전트 간 직접 호출 금지** — 반드시 이 오케스트레이터를 통해 조율한다.
 
@@ -11,7 +11,7 @@
 
 ## Workflow
 
-실행 순서는 항상 아래 5단계를 따른다. 각 단계는 이전 단계의 산출물 파일이 존재할 때만 진행한다.
+실행 순서는 항상 아래 4단계를 따른다. 각 단계는 이전 단계의 산출물 파일이 존재할 때만 진행한다.
 
 ### STEP 1 — 수집 (Collector)
 - 에이전트: `.claude/agents/collector/AGENT.md`
@@ -24,16 +24,9 @@
 - 입력: `output/raw_articles_{YYYY-MM-DD}.json`
 - 출력: `output/scored_articles_{YYYY-MM-DD}.json`
 
-### STEP 2.5 — 영문 번역 (Translator)
-- 에이전트: `.claude/agents/translator/AGENT.md`
-- 입력: `output/scored_articles_{YYYY-MM-DD}.json`
-- 출력: `output/translated_articles_{YYYY-MM-DD}.json`
-- **멱등성**: 오늘 날짜 파일이 이미 존재하면 이 단계를 건너뛴다
-- **처리 범위**: top5 + candidates 전체 중 language=="en" 기사만 번역
-
 ### STEP 3 — 요약·검증 (Summarizer)
 - 에이전트: `.claude/agents/summarizer/AGENT.md`
-- 입력: `output/translated_articles_{YYYY-MM-DD}.json`
+- 입력: `output/scored_articles_{YYYY-MM-DD}.json`
 - 출력: `output/summaries_{YYYY-MM-DD}.json`
 - **주의**: 착시 감지 시 후보 기사로 자동 대체, 후보 소진 시 에스컬레이션
 
@@ -51,8 +44,7 @@
 |------|-------------|
 | 수집 단계 시작 | Collector |
 | raw_articles 파일 존재 확인 후 | Analyzer |
-| scored_articles 파일 존재 확인 후 | Translator |
-| translated_articles 파일 존재 확인 후 | Summarizer |
+| scored_articles 파일 존재 확인 후 | Summarizer |
 | 관리자 승인 이벤트 수신 후 | Publisher |
 | 착시 감지, 후보 소진 | 오케스트레이터가 GitHub Issue 생성 후 중단 |
 
@@ -66,7 +58,6 @@
 ```
 output/raw_articles_{날짜}.json
 output/scored_articles_{날짜}.json
-output/translated_articles_{날짜}.json  ← 영문 번역 완료본
 output/summaries_{날짜}.json
 output/newsletter_{날짜}.html   ← 발행 전 검토용
 docs/index.html                 ← 배포 완료본
@@ -104,7 +95,7 @@ docs/archive/{날짜}.html        ← 아카이브
 
 ## Constraints
 
-- **LLM 호출 범위**: 영문 번역(STEP 2.5), 요약 생성(STEP 3), 착시 검증(STEP 3)에만 한정
+- **LLM 호출 범위**: 요약 생성(STEP 3)과 착시 검증(STEP 3)에만 한정
 - **수집·점수화·HTML 렌더링**: 코드(스크립트) 처리
 - **RSS 피드 목록**: `config/rss_sources.yaml`에서만 관리, 코드 하드코딩 금지
 - **배포 권한**: 관리자 `workflow_dispatch`만 허용, 자동 배포 금지

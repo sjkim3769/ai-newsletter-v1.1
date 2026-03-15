@@ -2,56 +2,12 @@
 # 이 파일에서만 RSS URL을 관리한다 (코드 하드코딩 금지)
 
 sources:
-  # 해외 영문 전문 언론
-  - name: "TechCrunch AI"
-    url: "https://techcrunch.com/category/artificial-intelligence/feed/"
-    type: "해외영문"
-    language: "en"
-    trust_weight: 1.2
-
-  - name: "VentureBeat AI"
-    url: "https://venturebeat.com/category/ai/feed/"
-    type: "해외영문"
-    language: "en"
-    trust_weight: 1.2
-
-  - name: "MIT Technology Review"
-    url: "https://www.technologyreview.com/feed/"
-    type: "해외영문"
-    language: "en"
-    trust_weight: 1.2
-
-  - name: "Wired"
-    url: "https://www.wired.com/feed/rss"
-    type: "해외영문"
-    language: "en"
-    trust_weight: 1.1
-
-  # 빅테크 공식 블로그
-  - name: "Anthropic Blog"
-    url: "https://www.anthropic.com/news/rss"
-    type: "빅테크공식"
-    language: "en"
-    trust_weight: 1.3
-
-  - name: "OpenAI Blog"
-    url: "https://openai.com/news/rss/"
-    type: "빅테크공식"
-    language: "en"
-    trust_weight: 1.3
-
-  - name: "Google AI Blog"
-    url: "https://blog.google/technology/ai/rss/"
-    type: "빅테크공식"
-    language: "en"
-    trust_weight: 1.3
-
   # 국내 IT 전문 언론
   - name: "지디넷코리아"
     url: "https://zdnet.co.kr/rss/news/"
     type: "국내"
     language: "ko"
-    trust_weight: 1.1
+    trust_weight: 1.2
 
   - name: "블로터"
     url: "https://www.bloter.net/feed/"
@@ -63,21 +19,33 @@ sources:
     url: "https://www.etnews.com/rss/allnews.xml"
     type: "국내"
     language: "ko"
+    trust_weight: 1.2
+
+  - name: "아이뉴스24"
+    url: "https://www.inews24.com/rss/allnews.xml"
+    type: "국내"
+    language: "ko"
     trust_weight: 1.1
 
-# AI 관련도 점수화 키워드
+  - name: "디지털타임스"
+    url: "https://www.dt.co.kr/rss/allnews.xml"
+    type: "국내"
+    language: "ko"
+    trust_weight: 1.1
+
+# AI 관련도 점수화 키워드 (한국어 기사 기준)
 ai_keywords:
   high_weight:  # +40점
+    - "AI"
+    - "인공지능"
+    - "생성형 AI"
     - "LLM"
     - "GPT"
     - "Claude"
     - "Gemini"
-    - "AI"
-    - "인공지능"
-    - "생성형 AI"
-    - "Generative AI"
     - "AGI"
     - "파운데이션 모델"
+    - "거대언어모델"
   medium_weight:  # +20점
     - "머신러닝"
     - "딥러닝"
@@ -88,6 +56,9 @@ ai_keywords:
     - "AI 정책"
     - "OpenAI"
     - "Anthropic"
-    - "Google DeepMind"
-    - "Meta AI"
-    - "Microsoft AI"
+    - "앤트로픽"
+    - "구글 딥마인드"
+    - "메타 AI"
+    - "마이크로소프트 AI"
+    - "챗GPT"
+    - "ChatGPT"

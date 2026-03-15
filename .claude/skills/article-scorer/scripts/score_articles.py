@@ -85,11 +85,9 @@ def calc_score(article, keywords_high, keywords_medium, trust_map, source_type_m
             score += 20
             break
 
-    # 출처 보너스
-    if source_type == "빅테크공식":
-        score += 20
-    elif source_type == "국내":
-        score += 5
+    # 출처 보너스 (국내 언론 대상)
+    if source_type == "국내":
+        score += 10
 
     # 최신성 (+10: 24시간 이내)
     if is_within_hours(article.get("published_at"), hours=24):
