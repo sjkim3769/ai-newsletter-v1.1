@@ -15,14 +15,27 @@ sources:
     language: "ko"
     trust_weight: 1.2
 
-  - name: "전자신문 SW"
-    url: "https://rss.etnews.com/04.xml"
+  - name: "아이뉴스24 IT"
+    url: "https://www.inews24.com/rss/news_it.xml"
     type: "국내"
     language: "ko"
     trust_weight: 1.1
 
-  - name: "아이뉴스24"
-    url: "https://rss.inews24.com/rss/news_it.xml"
+  - name: "파이낸셜뉴스 IT"
+    url: "https://www.fnnews.com/rss/r20/fn_realnews_it.xml"
+    type: "국내"
+    language: "ko"
+    trust_weight: 1.1
+
+  - name: "GeekNews"
+    url: "https://news.hada.io/rss/news"
+    type: "국내"
+    language: "ko"
+    trust_weight: 1.0
+
+  # 보도자료 배포 서비스 (기사 URL 안정성 높음)
+  - name: "뉴스와이어 AI"
+    url: "https://api.newswire.co.kr/rss/industry/615"
     type: "국내"
     language: "ko"
     trust_weight: 1.1
