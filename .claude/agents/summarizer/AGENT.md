@@ -20,15 +20,18 @@
 
 ```
 1. output/scored_articles_{YYYY-MM-DD}.json 로드
-2. top5 기사 목록 추출
-3. 각 기사에 대해 순서대로:
-   a. 원문 URL fetch (실제 본문 내용 획득)
+2. output/prefetched_{YYYY-MM-DD}.json 존재 여부 확인
+   - 존재하면: 해당 파일의 {url: content} 맵을 메모리에 로드 (URL fetch 생략)
+   - 없으면: 기존 방식대로 각 기사마다 URL fetch 수행
+3. top5 기사 목록 추출
+4. 각 기사에 대해 순서대로:
+   a. prefetched 맵에서 본문 조회 (없으면 content_snippet 폴백)
    b. 본문내용을 맥락에 맞게 5줄 요약 생성 (LLM)
-   c. 착시 자기 검증 (LLM)
+   c. 착시 자기 검증 (LLM) — prefetched 본문을 검증에도 동일하게 사용
    d. 검증 통과 → summaries 목록에 추가
-   e. 검증 실패 → 해당 기사 제외, candidates에서 다음 순위 기사로 대체 후 3번으로
-4. 5개 검증 완료 요약 확보 시 output/summaries_{YYYY-MM-DD}.json 저장
-5. 후보 소진 시 오케스트레이터에 에스컬레이션 반환
+   e. 검증 실패 → 해당 기사 제외, candidates에서 다음 순위 기사로 대체 후 4번으로
+5. 5개 검증 완료 요약 확보 시 output/summaries_{YYYY-MM-DD}.json 저장
+6. 후보 소진 시 오케스트레이터에 에스컬레이션 반환
 ```
 
 ---

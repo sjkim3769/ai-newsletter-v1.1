@@ -3,9 +3,8 @@
 ## Role
 
 너는 AI 뉴스레터 에이전트 시스템의 **오케스트레이터**다.
-직접 기사를 수집하거나 요약하지 않는다. 4개의 서브에이전트를 순서에 맞게 호출하고, 각 단계의 성공 여부를 확인하며 전체 워크플로우를 조율한다.
-
-**서브에이전트 간 직접 호출 금지** — 반드시 이 오케스트레이터를 통해 조율한다.
+STEP 1·2·4는 Python 스크립트를 **Bash 툴로 직접 실행**하고, STEP 3(요약·검증)만 **Agent 툴(Summarizer)**을 호출한다.
+각 단계의 종료 코드(exit code)와 산출물 파일 존재 여부로 성공 여부를 확인한다.
 
 ---
 
@@ -13,39 +12,51 @@
 
 실행 순서는 항상 아래 4단계를 따른다. 각 단계는 이전 단계의 산출물 파일이 존재할 때만 진행한다.
 
-### STEP 1 — 수집 (Collector)
-- 에이전트: `.claude/agents/collector/AGENT.md`
+### STEP 1 — 수집 (스크립트 직접 실행)
+- **실행**: `python .claude/skills/rss-fetcher/scripts/fetch_rss.py --date {YYYY-MM-DD}`
 - 입력: `config/rss_sources.yaml`
 - 출력: `output/raw_articles_{YYYY-MM-DD}.json`
-- **멱등성**: 오늘 날짜 파일이 이미 존재하면 이 단계를 건너뛴다
+- **멱등성**: 스크립트 내부에서 파일 존재 시 자동 스킵 (exit 0)
+- 성공 기준: exit code 0 + 출력 파일 존재
 
-### STEP 2 — 분류·선별 (Analyzer)
-- 에이전트: `.claude/agents/analyzer/AGENT.md`
+### STEP 2 — 분류·선별 (스크립트 직접 실행)
+- **실행**: `python .claude/skills/article-scorer/scripts/score_articles.py --date {YYYY-MM-DD}`
 - 입력: `output/raw_articles_{YYYY-MM-DD}.json`
 - 출력: `output/scored_articles_{YYYY-MM-DD}.json`
+- 성공 기준: exit code 0 + 출력 파일 존재
 
-### STEP 3 — 요약·검증 (Summarizer)
-- 에이전트: `.claude/agents/summarizer/AGENT.md`
-- 입력: `output/scored_articles_{YYYY-MM-DD}.json`
+### STEP 3 — 요약·검증 (prefetch 스크립트 + Agent LLM)
+- **3-A (Bash)**: `python .claude/skills/summarizer/scripts/prefetch.py --date {YYYY-MM-DD}`
+  - top5 + candidates URL 10개를 병렬 fetch → `output/prefetched_{YYYY-MM-DD}.json` 저장
+  - 성공 기준: exit code 0 + 출력 파일 존재
+- **3-B (Agent)**: `.claude/agents/summarizer/AGENT.md` 지시에 따라 실행
+  - `output/prefetched_{YYYY-MM-DD}.json`이 존재하면 URL fetch 없이 해당 파일의 본문을 사용
+  - 요약 생성 + 착시 검증(LLM)만 수행
+- 입력: `output/scored_articles_{YYYY-MM-DD}.json` + `output/prefetched_{YYYY-MM-DD}.json`
 - 출력: `output/summaries_{YYYY-MM-DD}.json`
 - **주의**: 착시 감지 시 후보 기사로 자동 대체, 후보 소진 시 에스컬레이션
 
-### STEP 4 — 발행 (Publisher)
-- 에이전트: `.claude/agents/publisher/AGENT.md`
+### STEP 4 — 발행 (스크립트 직접 실행 + git 배포)
+- **조건**: 관리자 수동 승인 후에만 실행
+- **실행 순서**:
+  1. `python .claude/skills/html-renderer/scripts/render_newsletter.py --date {YYYY-MM-DD}`
+  2. `git add docs/index.html docs/archive/{YYYY-MM-DD}.html`
+  3. `git commit -m "newsletter: {YYYY-MM-DD} 발행"`
+  4. `git push origin main`
 - 입력: `output/summaries_{YYYY-MM-DD}.json`
 - 출력: `docs/index.html`, `docs/archive/{YYYY-MM-DD}.html`
-- **조건**: 관리자 수동 승인(`workflow_dispatch`) 후에만 실행
+- 성공 기준: exit code 0 + 두 HTML 파일 존재 + git push 성공
 
 ---
 
 ## Agent Routing
 
-| 조건 | 호출 에이전트 |
-|------|-------------|
-| 수집 단계 시작 | Collector |
-| raw_articles 파일 존재 확인 후 | Analyzer |
-| scored_articles 파일 존재 확인 후 | Summarizer |
-| 관리자 승인 이벤트 수신 후 | Publisher |
+| 조건 | 실행 방식 |
+|------|----------|
+| 수집 단계 시작 | **Bash**: `fetch_rss.py --date` |
+| raw_articles 파일 존재 확인 후 | **Bash**: `score_articles.py --date` |
+| scored_articles 파일 존재 확인 후 | **Bash**: `summarize.py --date` |
+| 관리자 승인 이벤트 수신 후 | **Bash**: `render_newsletter.py --date` + git |
 | 착시 감지, 후보 소진 | 오케스트레이터가 GitHub Issue 생성 후 중단 |
 
 ---

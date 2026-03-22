@@ -9,6 +9,7 @@ import argparse
 import json
 import logging
 import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
@@ -53,24 +54,29 @@ def quality_gates(articles):
 
 # ── 링크 유효성 검사 ─────────────────────────────────────────────────────────
 
+def check_link(article):
+    """단일 기사 URL HTTP 200 확인. 실패 시 article 반환, 성공 시 None 반환."""
+    url = article["url"]
+    try:
+        resp = requests.head(url, timeout=LINK_TIMEOUT,
+                             headers={"User-Agent": "AI-Newsletter-Bot/1.1"},
+                             allow_redirects=True)
+        if resp.status_code == 200:
+            log.info(f"[OK] {url[:60]}")
+            return None
+        else:
+            log.warning(f"[FAIL {resp.status_code}] {url[:60]}")
+            return article
+    except Exception as e:
+        log.warning(f"[FAIL] {url[:60]} → {e}")
+        return article
+
+
 def check_links(articles):
-    """각 기사 URL HTTP 200 확인. 실패 기사 목록 반환."""
-    failed = []
-    for a in articles:
-        url = a["url"]
-        try:
-            resp = requests.head(url, timeout=LINK_TIMEOUT,
-                                 headers={"User-Agent": "AI-Newsletter-Bot/1.1"},
-                                 allow_redirects=True)
-            if resp.status_code == 200:
-                log.info(f"[OK] {url[:60]}")
-            else:
-                log.warning(f"[FAIL {resp.status_code}] {url[:60]}")
-                failed.append(a)
-        except Exception as e:
-            log.warning(f"[FAIL] {url[:60]} → {e}")
-            failed.append(a)
-    return failed
+    """각 기사 URL HTTP 200 확인 (병렬). 실패 기사 목록 반환."""
+    with ThreadPoolExecutor(max_workers=len(articles)) as executor:
+        results = list(executor.map(check_link, articles))
+    return [a for a in results if a is not None]
 
 
 # ── HTML 생성 ─────────────────────────────────────────────────────────────────

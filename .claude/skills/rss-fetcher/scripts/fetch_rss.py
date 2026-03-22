@@ -10,6 +10,7 @@ import json
 import logging
 import sys
 import uuid
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
@@ -142,11 +143,13 @@ def run(date_str, retry=0):
     sources_attempted = len(sources)
     sources_succeeded = 0
 
-    for source in sources:
-        fetched = fetch_feed(source)
-        if fetched:
-            sources_succeeded += 1
-        all_articles.extend(fetched)
+    with ThreadPoolExecutor(max_workers=len(sources)) as executor:
+        futures = {executor.submit(fetch_feed, source): source for source in sources}
+        for future in as_completed(futures):
+            fetched = future.result()
+            if fetched:
+                sources_succeeded += 1
+            all_articles.extend(fetched)
 
     # 유효성 검증 + 중복 제거
     valid = [a for a in all_articles if validate_article(a)]

@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python .claude/skills/rss-fetcher/scripts/fetch_rss.py --date 2026-03-21)",
+      "Bash(pip install:*)",
+      "Bash(python:*)",
+      "WebFetch(domain:www.etnews.com)",
+      "WebFetch(domain:news.hada.io)",
+      "WebFetch(domain:www.inews24.com)"
+    ]
+  }
+}
